@@ -1,5 +1,17 @@
 /* @flow */
 
+/**
+ * Virtual DOM 就是用一个原生的 JS 对象去描述一个 DOM 节点，
+ * 所以它比创建一个 DOM 的代价要小很多
+ * 借鉴 snabbdom，结合vue特性
+ * 其实 VNode 是对真实 DOM 的一种抽象描述，
+ * 它的核心定义无非就几个关键属性，
+ * 标签名、数据、子节点、键值等，
+ * 其它属性都是都是用来扩展 VNode 的灵活性以及实现一些特殊 feature 的。
+ * 由于 VNode 只是用来映射到真实 DOM 的渲染，
+ * 不需要包含操作 DOM 的方法，
+ * 因此它是非常轻量和简单的。
+ */
 export default class VNode {
   tag: string | void;
   data: VNodeData | void;

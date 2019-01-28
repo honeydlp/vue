@@ -46,6 +46,11 @@ export function initLifecycle (vm: Component) {
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
+  /**
+   * 调用时机
+   * 一个是首次渲染，
+   * 一个是数据更新的时候
+   */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     if (vm._isMounted) {
@@ -59,14 +64,18 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
-      // initial render
+      // initial render首次渲染
+      // web平台中 src/platforms/web/runtime/index.js
       vm.$el = vm.__patch__(
-        vm.$el, vnode, hydrating, false /* removeOnly */,
+        vm.$el, 
+        vnode, 
+        hydrating, 
+        false /* removeOnly */,
         vm.$options._parentElm,
         vm.$options._refElm
       )
     } else {
-      // updates
+      // updates 数据更新
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     activeInstance = prevActiveInstance
@@ -176,17 +185,29 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
+      // vm._render生成虚拟化node,./render.js
       vm._update(vm._render(), hydrating)
     }
   }
-
+  // 实例化Watcher,
+  // 在它的回调函数中会调用 updateComponent 方法，最终调用 vm._update 更新 DOM
+  /**
+   * Watcher 在这里起到两个作用，
+   * 一个是初始化的时候会执行回调函数，
+   * 另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数，
+   */
   vm._watcher = new Watcher(vm, updateComponent, noop)
   hydrating = false
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+  /**
+   * 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例
+   */
   if (vm.$vnode == null) {
+    // 实例已经挂载标志
     vm._isMounted = true
+    // 执行mounted钩子函数
     callHook(vm, 'mounted')
   }
   return vm

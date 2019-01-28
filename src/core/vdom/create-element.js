@@ -11,6 +11,12 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+/**
+ * 创建 VNode
+ * 映射到真实的 DOM 实际上要经历 
+ * VNode 的 create、diff、patch 等过程。
+ * 那么在 Vue.js 中，VNode 的 create 是通过之前提到的 createElement 方法创建的
+ */
 export function createElement (
   context: Component,
   tag: any,
@@ -27,7 +33,14 @@ export function createElement (
   if (alwaysNormalize) normalizationType = ALWAYS_NORMALIZE
   return _createElement(context, tag, data, children, normalizationType)
 }
-
+/**
+ * 
+ * @param {*表示 VNode 的上下文环境} context 
+ * @param {*表示标签，它可以是一个字符串，也可以是一个 Component} tag 
+ * @param {*表示 VNode 的数据，它是一个 VNodeData 类型} data 
+ * @param {*children 表示当前 VNode 的子节点，它是任意类型的，它接下来需要被规范为标准的 VNode 数组} children 
+ * @param {*子节点规范的类型，主要是参考 render 函数是编译生成的还是用户手写的} normalizationType 
+ */
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
@@ -54,6 +67,7 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  // 规范化children
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
@@ -63,6 +77,7 @@ export function _createElement (
   if (typeof tag === 'string') {
     let Ctor
     ns = config.getTagNamespace(tag)
+    // 是否内置节点
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       vnode = new VNode(

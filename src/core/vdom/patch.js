@@ -547,7 +547,13 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  // vm._update 函数里调用的 vm.__patch__
+  /**
+   * oldVnode 旧的dom节点，或者不存在的dom对象
+   * _render后的vdode的节点
+   * 是否是服务端渲染
+   * 
+   */
   return function patch (oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
     if (!vnode) {
       if (oldVnode) invokeDestroyHook(oldVnode)
@@ -596,6 +602,9 @@ export function createPatchFunction (backend) {
         // replacing existing element
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)
+        /**
+         * 通过虚拟节点创建真实的dom,并插入到父节点中
+         */
         createElm(
           vnode,
           insertedVnodeQueue,

@@ -12,7 +12,7 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
+// 缓存之前定义的原型上的方法
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
@@ -21,6 +21,7 @@ Vue.prototype.$mount = function (
   el = el && query(el)
 
   /* istanbul ignore if */
+  // 不能挂在在html，body这些根节点
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
       `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
@@ -28,11 +29,15 @@ Vue.prototype.$mount = function (
     return this
   }
 
+  // Vue 的组件的渲染最终都需要 render 方法
   const options = this.$options
   // resolve template/el and convert to render function
   if (!options.render) {
     let template = options.template
     if (template) {
+      /**
+       * template里必须有innerHTML
+       */
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template)
@@ -60,11 +65,12 @@ Vue.prototype.$mount = function (
       if (process.env.NODE_ENV !== 'production' && config.performance && perf) {
         perf.mark('compile')
       }
-
+      //  Vue 的一个“在线编译”
       const { render, staticRenderFns } = compileToFunctions(template, {
         shouldDecodeNewlines,
         delimiters: options.delimiters
       }, this)
+      // 没有render 先转化render
       options.render = render
       options.staticRenderFns = staticRenderFns
 
@@ -75,6 +81,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 调用缓存过之前定义的mount，主要为template挂载render,staticRenderFns
   return mount.call(this, el, hydrating)
 }
 

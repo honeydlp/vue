@@ -12,7 +12,16 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 
 let uid = 0
 
+// 定义vue初始化后，调用的this._init
 export function initMixin (Vue: Class<Component>) {
+  /**
+   * Vue 初始化主要就干了几件事情，
+   * 合并配置，
+   * 初始化生命周期，
+   * 初始化事件中心，
+   * 初始化渲染，
+   * 初始化 data、props、computed、watcher 等等。
+   */
   Vue.prototype._init = function (options?: Object) {
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && perf) {
@@ -24,7 +33,7 @@ export function initMixin (Vue: Class<Component>) {
     vm._uid = uid++
     // a flag to avoid this being observed
     vm._isVue = true
-    // merge options
+    // merge options 合并配置
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -44,6 +53,11 @@ export function initMixin (Vue: Class<Component>) {
       vm._renderProxy = vm
     }
     // expose real self
+    /**
+     * 初始化生命周期，
+     * 初始化事件中心，
+     * 初始化渲染，
+     */
     vm._self = vm
     initLifecycle(vm)
     initEvents(vm)
@@ -59,8 +73,19 @@ export function initMixin (Vue: Class<Component>) {
       perf.mark('init end')
       perf.measure(`${vm._name} init`, 'init', 'init end')
     }
-
+    /**
+     * 在初始化的最后，检测到如果有 el 属性，则调用 vm.$mount 方法挂载 vm，挂载的目标就是把模板渲染成最终的 DOM
+     */
     if (vm.$options.el) {
+      /**
+       * Vue 中我们是通过 $mount 实例方法去挂载 vm 的，
+       * $mount 方法在多个文件中都有定义，
+       * 如 src/platform/web/entry-runtime-with-compiler.js、
+       * src/platform/web/runtime/index.js、
+       * src/platform/weex/runtime/index.js
+       * 实现方法和平台，构建方法都相关
+       */
+      // entries 带 compiler 版本/entry-runtime-with-compiler.js
       vm.$mount(vm.$options.el)
     }
   }

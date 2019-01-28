@@ -30,12 +30,13 @@ extend(Vue.options.components, platformComponents)
 // install platform patch function
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
-// public mount method
+// public mount method 公用的
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined
+  // 生命周期的方法
   return mountComponent(this, el, hydrating)
 }
 
